@@ -3,10 +3,13 @@
  * mincals.inc.php
  * Fonctions permettant d'afficher le mini calendrier
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2022-06-19 15:55$
- * @author    JeromeB & Laurent Delineau & Yan Naessens
- * @copyright Copyright 2003-2022 Team DEVOME - JeromeB
+ * Dernière modification : $Date: 2010-01-06 10:21:20 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: mincals.inc.php,v 1.7 2010-01-06 10:21:20 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -14,9 +17,20 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-
+function minicals($year, $month, $day, $area, $room, $dmy)
+{
+	global $display_day, $vocab;
+	get_planning_area_values($area);
 	class Calendar
 	{
 		private $month;
@@ -58,24 +72,19 @@
 		private function getDateLink($day, $month, $year)
 		{
 			global $vocab;
-            if (isset($this->room))
-                return "<a onclick=\"charger();\" class=\"cellcalendar\" title=\"".htmlspecialchars(get_vocab("see_day_for_this_room"))."\" href=\"day.php?year=$year&amp;month=$month&amp;day=$day&amp;room=".$this->room."\"";
-            return "<a onclick=\"charger();\" class=\"cellcalendar\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"day.php?year=$year&amp;month=$month&amp;day=$day&amp;area=".$this->area."\"";
-        }
-/* inutile de faire un test pour finalement faire la même chose YN le 07/03/2018
 			if ($this->dmy == 'day')
 			{
 				if (isset($this->room))
-					return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_day_for_this_room"))."\" href=\"".$this->dmy.".php?year=$year&amp;month=$month&amp;day=$day&amp;room=".$this->room."\"";
+					return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"".$this->dmy.".php?year=$year&amp;month=$month&amp;day=$day&amp;room=".$this->room."\"";
 				return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"".$this->dmy.".php?year=$year&amp;month=$month&amp;day=$day&amp;area=".$this->area."\"";
 			}
 			if ($this->dmy != 'day')
 			{
 				if (isset($this->room))
-					return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_day_for_this_room"))."\" href=\"day.php?year=$year&amp;month=$month&amp;day=$day&amp;room=".$this->room."\"";
+					return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"day.php?year=$year&amp;month=$month&amp;day=$day&amp;room=".$this->room."\"";
 				return "<a onclick=\"charger();\" class=\"calendar\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"day.php?year=$year&amp;month=$month&amp;day=$day&amp;area=".$this->area."\"";
 			}
-		} */
+		}
 
 		/**
 		 * @param integer $m
@@ -109,7 +118,7 @@
 					if (($this->dmy == 'day') && ($d == $this->day) && ($this->h))
 						$s .= "<td class=\"week\">";
 					else
-						$s .= "<td>";
+						$s .= "<td class=\"cellcalendar\">";
 					if ($d > 0 && $d <= $daysInMonth)
 					{
 						$link = $this->getDateLink($d, $this->month, $this->year);
@@ -146,10 +155,10 @@
 				$bg_lign = '';
 				if (($week_today == $week) && ($this->h) && (($this->dmy == 'week_all') || ($this->dmy == 'week')))
 					$bg_lign = " class=\"week\"";
-				$s .= "<tr ".$bg_lign."><td class=\"calendarcol1\">";
-				$t = "<a onclick=\"charger();\" class=\"cellcalendar\" title=\"".htmlspecialchars(get_vocab("see_week_for_this_area"))."\" href=\"week_all.php?year=$this->year&amp;month=$this->month&amp;day=$temp&amp;area=$this->area\">".sprintf("%02d",$week)."</a>";
+				$s .= "<tr ".$bg_lign."><td class=\"calendarcol1 lienSemaine\">";
+				$t = "<a onclick=\"charger();\" title=\"".htmlspecialchars(get_vocab("see_week_for_this_area"))."\" href=\"week_all.php?year=$this->year&amp;month=$this->month&amp;day=$temp&amp;area=$this->area\">".sprintf("%02d",$week)."</a>";
 				if (($this->dmy != 'day') && ($this->dmy != 'week_all') && ($this->dmy != 'month_all') && ($this->dmy != 'month_all2'))
-					$t = "<a onclick=\"charger();\" class=\"cellcalendar\" title=\"".htmlspecialchars(get_vocab("see_week_for_this_room"))."\" href=\"week.php?year=$this->year&amp;month=$this->month&amp;day=$temp&amp;area=$this->area&amp;room=$this->room\">".sprintf("%02d",$week)."</a>";
+					$t = "<a onclick=\"charger();\" title=\"".htmlspecialchars(get_vocab("see_week_for_this_room"))."\" href=\"week.php?year=$this->year&amp;month=$this->month&amp;day=$temp&amp;area=$this->area&amp;room=$this->room\">".sprintf("%02d",$week)."</a>";
 				$s .= $t;
 				$temp = $temp + 7;
 				while ((!checkdate($this->month, $temp, $this->year)) && ($temp > 0))
@@ -184,21 +193,15 @@
 
 		private function getFirstDays()
 		{
-			global $weekstarts, $display_day, $nb_display_day;
-            if ($nb_display_day == 0){// aucun jour à afficher ? on force l'affichage
-                for ($i=0;$i<7;$i++){
-                    $display_day[$i] = 1;
-                }
-            }
+			global $weekstarts, $display_day;
 			$basetime = mktime(12, 0, 0, 6, 11 + $weekstarts, 2000);
 			for ($i = 0, $s = ""; $i < 7; $i++)
 			{
 				$j = ($i + 7 + $weekstarts) % 7;
 				$show = $basetime + ($i * 24 * 60 * 60);
-				$fl = ucfirst(utf8_strftime('%a',$show));
+				$fl = ucfirst(strftime('%a',$show));
 				if ($display_day[$j] == 1)
-					//$s .= "<td class=\"calendarcol1\">$fl</td>\n";
-                    $s .= "<th>$fl</th>\n";
+					$s .= "<td class=\"calendarcol1\">$fl</td>\n";
 				else
 					$s .= "";
 			}
@@ -220,48 +223,38 @@
 			$s = "";
 			$daysInMonth = $this->getDaysInMonth($this->month, $this->year);
 			$date = mktime(12, 0, 0, $this->month, 1, $this->year);
-			$first = (date('w',$date) + 7 - $weekstarts) % 7;
-			$monthName = ucfirst(utf8_strftime("%B", $date));
-			if(Settings::get("menu_gauche") == 2){
-				$s .= "\n<div class=\"col-lg-4 col-md-6 col-xs-12\">\n".PHP_EOL;
-			} else{
-				$s .= "\n<div class=\"col-xs-12\">\n".PHP_EOL;
-			}
+			$first = (strftime("%w",$date) + 7 - $weekstarts) % 7;
+			$monthName = ucfirst(strftime("%B", $date));
 			$s .= "\n<table class=\"calendar\">\n";
 			$s .= "<caption>";
 			$week = $this->getWeekNumber($date);
 			$weekd = $week;
 			$s .= "<div class=\"btn-group\">";
 			$s .= $this->createlink(0, -1, $this->month, $this->year, $this->dmy, $this->room, $this->area, "previous_year", "backward");
-			$s .= $this->createlink(-1, 0, $this->month, $this->year, $this->dmy, $this->room, $this->area, "monthbefore", "chevron-left");
+			$s .= $this->createlink(-1, 0, $this->month, $this->year, $this->dmy, $this->room, $this->area, "see_month_for_this_room", "chevron-left");
 			if (($this->dmy != 'day') && ($this->dmy != 'week_all') && ($this->dmy != 'month_all') && ($this->dmy != 'month_all2'))
-				$s .= "<button type=\"button\" title=\"".htmlspecialchars(get_vocab("see_month_for_this_room"))."\" class=\"btn btn-default btn-xs\" onclick=\"charger();javascript: location.href='month.php?year=$this->year&amp;month=$this->month&amp;day=1&amp;area=$this->area&amp;room=$this->room';\">$monthName $this->year</button>\n";
+				$s .= "<button type=\"button\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_month"))."\" class=\"btn btn-default btn-xs\" onclick=\"charger();javascript: location.href='month.php?year=$this->year&amp;month=$this->month&amp;day=1&amp;area=$this->area&amp;room=$this->room';\">$monthName $this->year</button>\n";
 			else
 				$s .= "<button type=\"button\" title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_month"))."\" class=\"btn btn-default btn-xs\" onclick=\"charger();javascript: location.href='".$type_month_all.".php?year=$this->year&amp;month=$this->month&amp;day=1&amp;area=$this->area';\">$monthName $this->year</button>\n";
-			$s .= $this->createlink(1, 0, $this->month, $this->year, $this->dmy, $this->room, $this->area, "monthafter", "chevron-right");
+			$s .= $this->createlink(1, 0, $this->month, $this->year, $this->dmy, $this->room, $this->area, "see_month_for_this_room", "chevron-right");
 			$s .= $this->createlink(0, 1, $this->month, $this->year, $this->dmy, $this->room, $this->area, "following_year", "forward");
 			$s .= "</div>";
 			$action = $this->GetAction();
 			$s .= "<br/><button type=\"button\" title=\"".htmlspecialchars(get_vocab("gototoday"))."\" class=\"btn btn-default btn-xs\" onclick=\"charger();javascript: location.href='".$action."';\">".get_vocab("gototoday")."</button>";
 			$s .= "</caption>";
-			$s .= "<thead><tr><td class=\"calendarcol1\">".get_vocab("semaine")."</td>\n";
+			$s .= "<tr><td class=\"calendarcol1\">".get_vocab("semaine")."</td>\n";
 			$s .= $this->getFirstDays();
-			$s .= "</tr></thead>\n";
+			$s .= "</tr>\n";
 			$d = 1 - $first;
 			$temp = 1;
 			$s .= $this->DayOfMonth($d, $daysInMonth, $week_today, $week, $temp);
 			if ($week - $weekd < 6)
 				$s .= "";
 			$s .= "</table>\n";
-			$s .= "</div>\n";
 			return $s;
 		}
 	}
 
-function minicals($year, $month, $day, $area, $room, $dmy)
-{
-	global $display_day, $vocab;
-	get_planning_area_values($area);
 	$nb_calendar = Settings::get("nb_calendar");
 	if ($nb_calendar >= 1)
 	{

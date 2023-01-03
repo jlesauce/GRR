@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="69aa3b0c-5f62-4092-95cb-a28724560d27" name="FTP_ASAC_GRR" url="http://resa.asac-tregor.fr/login.php">
+        <fileTransfer rootFolder="/resa" host="ftp.webmo.fr" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

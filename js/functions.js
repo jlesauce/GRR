@@ -1,20 +1,4 @@
-/*
- * ./js/functions.js
- * fichier Bibliothèque de fonctions Javascript de GRR
- * Dernière modification : $Date: 2021-04-20 14:51$
- * @author    JeromeB & Laurent Delineau & Marc-Henri PAMISEUX & Yan Naessens
- * @copyright Copyright 2003-2021 Team DEVOME - JeromeB
- * @link      http://www.gnu.org/licenses/licenses.html
- *
- * This file is part of GRR.
- *
- * GRR is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
- 
-// Permet de faire une validation afin que l'usager ne puisse pas sélectionner un jour invalide pour le début du premier Jours/Cycle
+// Permet de faire une validation afin que l'usager ne puisse pas s�lectionner un jour invalide pour le d�but du premier Jours/Cycle
 function verifierJoursCycles()
 {
 	valeurA = document.getElementById('jourDebut').value;
@@ -61,9 +45,9 @@ function clicMenu(num)
 function centrerpopup(page,largeur,hauteur,options)
 {
 // les options :
-//    * left=100 : Position de la fenêtre par rapport au bord gauche de l'écran.
-//    * top=50 : Position de la fenêtre par rapport au haut de l'écran.
-//    * resizable=x : Indique si la fenêtre est redimensionnable.
+//    * left=100 : Position de la fen�tre par rapport au bord gauche de l'�cran.
+//    * top=50 : Position de la fen�tre par rapport au haut de l'�cran.
+//    * resizable=x : Indique si la fen�tre est redimensionnable.
 //    * scrollbars=x : Indique si les barres de navigations sont visibles.
 //    * menubar=x : Indique si la barre des menus est visible.
 //    * toolbar=x : Indique si la barre d'outils est visible.
@@ -106,11 +90,11 @@ function confirmButton(theform,themessage)
 }
 // end of the 'confirmButton()' function
 /**
- * Checks/unchecks les boîtes à cocher
+ * Checks/unchecks les boites � cocher
  *
  * the_form   string   the form name
  * do_check   boolean  whether to check or to uncheck the element
- * day la valeur de la boîte à cocher ou à décocher
+ * day la valaur de de la boite � cocher ou � d�cocher
  * return  boolean  always true
  */
  function setCheckboxesGrr(elts, do_check, day)
@@ -121,21 +105,6 @@ function confirmButton(theform,themessage)
  		if (type="checkbox")
  		{
  			if ((elts[i].value== day) || (day=='all'))
- 			{
- 				elts[i].checked = do_check;
- 			}
- 		}
- 	}
- 	return true;
-} // end of the 'setCheckboxes()' function
- function setCheckboxesGrrName(elts, do_check, day)
- {
- 	for (i = 0; i < elts.length; i++)
- 	{
- 		type = elts.type;
- 		if (type="checkbox")
- 		{
- 			if (elts[i].name== day)
  			{
  				elts[i].checked = do_check;
  			}
@@ -160,14 +129,13 @@ function _setCheckboxesGrr(the_form, do_check, day)
 	return true;
 }
 // end of the 'setCheckboxes()' function
-// Les quatre fonctions qui suivent servent à enregistrer un cookie
-// Elles sont utilisées par edit_entry.php pour conserver les informations de la saisie pour
-// pouvoir les récupérer lors d'une erreur.
+// Les quatre fonctions qui suivent servent � enregistrer un cookie
+// Elles sont utilis� par edit_enty.php pour conserver les informations de la saisie pour
+// pouvoir les r�cup�rer lors d'une erreur.
 //Hugo
 // Voir http://www.howtocreate.co.uk/jslibs/script-saveformvalues
-// les erreurs constatées lors de l'utilisation de champs additionnels sont prévisibles : howtocreate déconseille l'utilisation des scripts lorsque le formulaire est calculé par Javascript :-(
 var FS_INCLUDE_NAMES = 0, FS_EXCLUDE_NAMES = 1, FS_INCLUDE_IDS = 2, FS_EXCLUDE_IDS = 3, FS_INCLUDE_CLASSES = 4, FS_EXCLUDE_CLASSES = 5;
-//Hugo - fonction qui récupère les informations des champs input pour les stocker dans un cookie (Voir http://www.howtocreate.co.uk/jslibs/script-saveformvalues)
+//Hugo - fonction qui r�cup�re les informations des champs input pour les stocker dans un cookie (Voir http://www.howtocreate.co.uk/jslibs/script-saveformvalues)
 function getFormString( formRef, oAndPass, oTypes, oNames )
 {
 	if (oNames)
@@ -215,7 +183,7 @@ function getFormString( formRef, oAndPass, oTypes, oNames )
 	}
 	return oStr;
 }
-//Hugo - Fonction qui récupère les informations stockées dans le cookie pour les remettre dans les inputs (Voir http://www.howtocreate.co.uk/jslibs/script-saveformvalues)
+//Hugo - Fonction qui r�cup�re les informations stock�es de le cookie pour les remttres dans les inputs (Voir http://www.howtocreate.co.uk/jslibs/script-saveformvalues)
 function recoverInputs( formRef, oStr, oAndPass, oTypes, oNames )
 {
 	if (oStr)
@@ -266,83 +234,6 @@ function recoverInputs( formRef, oStr, oAndPass, oTypes, oNames )
 		}
 	}
 }
-// alternative
-// récupère les champs d'un formulaire et les transforme en une chaîne qui sera stockée dans un cookie
-function getFormString( formRef)
-{
-     var fields = $(formRef).serializeArray();
-     var valeurs = "";
-     $.each(fields, function(i, field){
-       var valeur = field.value.replace(/%/g,'%p').replace(/,/g,'%c'); // code virgule et pourcent
-       valeurs += field.name + ":" + valeur + ",";
-     });
-     return valeurs;
-}
-// parse la chaîne issue du cookie et attribue les valeurs aux champs du formulaire
-function recoverInputs( formRef, oStr)
-{
-    if (oStr) // vérifie que le paramètre est non NULL
-    {
-        oStr = oStr.split( ',' );
-        var valeurs = "";
-        oStr.forEach(myFunction);
-        function myFunction(a){
-            a = a.split(':');
-            valeurs += a[0] + '::'+ a[1] + '??';
-        }
-     $("#panel").append(valeurs);
-    }
-}
-function recoverInputs( formRef, oStr)
-{
-    if (oStr) // vérifie que le paramètre est non NULL
-    {
-        oStr = oStr.split( ',' );
-        oVal = new Object();
-        var valeurs = "";
-        function f(s){
-            s = s.split(':');
-            oVal[s[0]] = s[1];
-        }
-        oStr.forEach(f);
-        for(var v in oVal){
-            valeurs += v + ':::' + oVal[v] + '<br>'; // remplacer par l'affectation des valeurs aux champs du formulaire document.getElementById("queryString").value = "$thisValue";
-        }
-        for (var x = 0; formRef.elements[x]; x++ )
-		{
-			if (formRef.elements[x].type)
-			{
-                var oE = formRef.elements[x];var oT = oE.type.toLowerCase();var oN = oE.name;
-				try{
-                    if (oT == 'text' || oT == 'textarea' || oT == 'password' || oT == 'datetime' || oT == 'datetime-local' || oT == 'date' || oT == 'month' || oT == 'week' || oT == 'time' || oT == 'number' || oT == 'range' || oT == 'email' || oT == 'url' )
-                    {
-                        oE.value = oVal[oN].replace(/%c/g,',').replace(/%p/g,'%'); // si oVal[oN] n'est pas défini: déclenche une erreur, d'où try
-                    }
-                    else if (oT == 'radio' || oT == 'checkbox')
-                    {
-                        oE.checked = oVal[oN] ? true : false;
-                    }
-                    else if ( oT == 'select-one')
-                    {
-                        oE.selectedIndex = parseInt( oVal[oN]);
-                    }
-                    else if ( oT == 'select-multiple')
-                    {
-                        for (var oO = oE.options, i = 0; oO[i]; i++ )
-                        {
-                            oO[i].selected = oVal[oN] ? true : false;
-                        }
-                    }
-                }
-                catch(err)
-                {
-                    continue;
-                }
-            }
-        }
-        //$("#panel").append(valeurs);
-    }
-}
 function retrieveCookie(cookieName)
 {
 	/* retrieved in the format
@@ -374,7 +265,7 @@ function setCookie(cookieName, cookieValue, lifeTime, path, domain, isSecure)
 	syntax: cookieName=cookieValue[;expires=dataAsString[;path=pathAsString[;domain=domainAsString[;secure]]]]
 	Because of the way that document.cookie behaves, writing this here is equivalent to writing
 	document.cookie = whatIAmWritingNow + "; " + document.cookie; */
-	document.cookie = escape(cookieName) + "=" + escape(cookieValue) + (lifeTime ? ";expires=" + (new Date((new Date()).getTime() + (1000 * lifeTime))).toGMTString() : "") + (path ? ";path=" + path : "") + (domain ? ";domain=" + domain : "") + (isSecure ? ";secure" : "") + "; SameSite=Lax";
+	document.cookie = escape(cookieName) + "=" + escape(cookieValue) + (lifeTime ? ";expires=" + (new Date((new Date()).getTime() + (1000 * lifeTime))).toGMTString() : "") + (path ? ";path=" + path : "") + (domain ? ";domain=" + domain : "") + (isSecure ? ";secure" : "");
 	//check if the cookie has been set/deleted as required
 	if ( lifeTime < 0 )
 	{
@@ -390,7 +281,7 @@ function setCookie(cookieName, cookieValue, lifeTime, path, domain, isSecure)
 	}
 	return false;
 }
-/* fonction qui est utilisée pour basculer un élément d'une liste1 vers une liste2 et inversement (utilisé lors de la création d'une demande) */
+/* fonction qui est utilis�e pour basculer un �l�ment d'une liste1 vers une liste2 et inversement (utilis� lors de la cr�ation d'une demande) */
 function Deplacer(liste1, liste2)
 {
 	while (liste1.options.selectedIndex >= 0)
@@ -416,22 +307,20 @@ function selectionner_liste(IdListe)
 		IdListe.options[i].selected = true;
 	}
 }
-/*-----MAJ Loïs THOMAS  --> Fonctions qui permettent de cacher et afficher le menu à gauche -----*/
+/*-----MAJ Lo�s THOMAS  --> Fonctions qui permettent de cacher et afficher le menu � gauche -----*/
 function divaffiche(month_all2)
 {
 	var Nbr = month_all2;
 	if ( Nbr == 1)
 	{
-		document.getElementById("menuGaucheMonthAll2").style.display = "inline-block";
-		// document.getElementById("planningMonthAll2").style.marginLeft = "300px";
-		// document.getElementById("planning").style.width = "75%";
-        document.getElementById("planning").style.width = "auto";
-        document.getElementById("planningMonthAll2").style.width = "auto";
+		document.getElementById("menuGaucheMonthAll2").style.display = "block";
+		document.getElementById("planningMonthAll2").style.marginLeft = "300px";
+		document.getElementById("planningMonthAll2").style.width = "auto";
 	}
 	else
 	{
 		document.getElementById("menuGauche").style.display = "block";
-		// document.getElementById("planning").style.marginLeft = "300px";
+		document.getElementById("planning").style.marginLeft = "300px";
 		document.getElementById("planning").style.width = "auto";
 	}
 	document.getElementById("cacher").style.display = "inline";
@@ -444,7 +333,7 @@ function divcache(month_all2)
 	{
 		document.getElementById("menuGaucheMonthAll2").style.display = "none";
 		document.getElementById("planningMonthAll2").style.marginLeft = "0px";
-		document.getElementById("planningMonthAll2").style.width = "133%";
+		document.getElementById("planningMonthAll2").style.width = "auto";
 	}
 	else
 	{
@@ -461,7 +350,6 @@ function afficherMoisSemaine(a)
 	document.getElementById('afficherBoutonSelection'+Nb).style.display = "none";
 	document.getElementById('cacherBoutonSelection'+Nb).style.display = "inline";
 	document.getElementById('boutonSelection'+Nb).style.display = "inline";
-    $('.floatthead').floatThead('reflow');
 }
 function cacherMoisSemaine(a)
 {
@@ -469,7 +357,6 @@ function cacherMoisSemaine(a)
 	document.getElementById('cacherBoutonSelection'+Nb).style.display = "none";
 	document.getElementById('afficherBoutonSelection'+Nb).style.display = "inline";
 	document.getElementById('boutonSelection'+Nb).style.display = "none";
-    $('.floatthead').floatThead('reflow');
 }
 
 function charger(){
@@ -477,86 +364,126 @@ function charger(){
 	test.style.display = 'Block';
 }
 
-function cacherMenuGauche(){
-    document.getElementById("menuGauche2").style.display = "none";
-    document.getElementById("planning2").style.width = "100%";
-    document.getElementById("cacher").style.display = "none";
-	document.getElementById("voir").style.display = "inline";
+function clearOptions(id){
+	document.getElementById(id).options.length = 0;
+	document.getElementById(id).innerHTML= '<optgroup label="Salles"><option value="">Selectionnez une ressource </option>'
 }
 
-function afficherMenuGauche(){
-    document.getElementById("menuGauche2").style.display = "inline-block";
-    document.getElementById("planning2").style.width = "75%";
-    document.getElementById("cacher").style.display = "inline";
-	document.getElementById("voir").style.display = "none";
+//lance l'impression apr�s clic sur bouton et si configur� pour
+function printPage(optionPrint){
+	console.log("test print");
+	if((window.location.href.indexOf("&pview=1&precedent=1") > -1) & (optionPrint == 1)){
+       window.print();
+       console.log("impression");
+    }
+    else{
+		console.log("pas d'impression");
+	}
+}
+//==Gestion des fichiers joints==
+//upload des fichiers.
+function uploadFiles(){
+
+	var myForm = document.getElementById("uploadForm");
+	var progress = document.getElementById("avancement");
+	var infos = document.getElementById("infos");
+
+	myForm.onsubmit = function(event){
+
+		//d�sactive le traitement normal du formulaire
+		event.preventDefault();
+
+		//dispo de formData
+		if(window.FormData){
+			var fd = new FormData();
+		}
+		else{
+			alert("FormData non support� par votre navigateur");
+			return;
+		}
+
+		//init ajax
+		var xhr = new XMLHttpRequest();
+
+		//parametre de la requ�te
+		//myForm.getAttribute("action") = "upload.php";
+		xhr.open("post", myForm.getAttribute("action"), true);
+
+		xhr.onreadystatechange = function(event){
+			if(this.readyState == 4){
+				//affichage du retour texte de la requ�te
+				infos.innerHTML += event.target.responseText;
+			}
+		};
+		//sur la progression
+		xhr.onprogress = function(event){
+			if(event.lengthComputable){
+				var pourcentage = Math.round(event.loaded*100/event.total);
+				progress.setAttribute("aria-valuenow", pourcentage);
+				progress.value = pourcentage;
+			}
+		};
+
+		//liste des fichiers et id � envoyer
+		var inputFiles = document.getElementById('myFiles');
+		var fichiers = inputFiles.files;
+
+		for(i=0; i<fichiers.length; i++){
+			infos.innerHTML += "Envoi de "+fichiers[i].name+"...<br>";
+			fd.append(inputFiles.name, fichiers[i]);
+		}
+		var id_index = document.getElementById('id_entry');
+		fd.append("id_entry", id_index.value);
+		//envoi des donn�es
+		xhr.send(fd);
+	};
 }
 
-function afficheMenuHG(mode){
-    var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    var menuGw,planningw,realmode;
-    if (w < 992){
-        realmode = 2;
-    }
-    else if (w < 1240){
-        realmode = mode;
-        menuGw = "25%";
-        planningw = "75%";
-    }
-    else {
-        realmode = mode;
-        menuGw = "20%";
-        planningw = "80%";
-    }
-    if (mode == 0) /* menus cachés */
-    {
-        document.getElementById("menuHaut").style.display = "none";
-        document.getElementById("menuGauche2").style.display = "none";
-        document.getElementById("planning2").style.width = "100%";
-        document.getElementById("cacher").style.display = "none";
-        document.getElementById("voir").style.display = "inline-block";
-        $('.floatthead').floatThead('reflow');
-    }
-    else if (mode == 1) /* menu affiché à gauche*/
-    {
-        document.getElementById("menuHaut").style.display = "none";
-        document.getElementById("menuGauche2").style.display = "inline-block";
-        document.getElementById("menuGauche2").style.width = menuGw;
-        document.getElementById("planning2").style.width = planningw;
-        document.getElementById("cacher").style.display = "inline-block";
-        document.getElementById("voir").style.display = "none";
-        $('.floatthead').floatThead('reflow');
-    }
-    else if (mode == 2) /* menu affiché en haut */
-    {
-        document.getElementById("menuHaut").style.display = "inline-block";
-        document.getElementById("menuGauche2").style.display = "none";
-        document.getElementById("planning2").style.display = "inline-block";
-        document.getElementById("planning2").style.width = "100%";
-        document.getElementById("cacher").style.display = "inline-block";
-        document.getElementById("voir").style.display = "none";
-        $('.floatthead').floatThead('reflow');
-    }
+function loadFile(){
+	// v�rifie si une ligne est s�lectionn�e
+	var target = document.getElementById("SelectFile");
+	if(target.selectedIndex == -1){
+		alert("Veuillez selectionner un fichier")
+	}
+	else{
+		//r�cup�re le nom r�el du fichier et transmet la demande de r�cup�ration.
+		var fileSelected = target.options[target.selectedIndex].value;
+		console.log(fileSelected);
+		window.location.href = 'download_files.php?name='+fileSelected;
+	}
 }
-/*
-function menuHaut(){
-        var e=$("div#panel").is(":hidden");
-        if(e)
-        {
-            /*$("div#panel").show("slow");
-            document.getElementById("panel").style.display = "inline-block";
-            $('.floatthead').floatThead('reflow');
-        }
-        else 
-        {
-            /* $("div#panel").hide("slow"); 
-            document.getElementById("panel").style.display = "none";
-            $('.floatthead').floatThead('reflow');
-        }
-        setCookie("open",e,365)
-}*/
-/*
- *Fonction permettant l'ouverture d'un PopUP de la page view entry.php pour création d'un pdf
- */
-function lienPDF(id) {
-    var myWindow = window.open("app.php?p=pdfgenerator&id="+id+"", "_blank", "width=960");
+
+
+function deleteFile(id,rowIndex,idFile){
+	var dtarget = document.getElementById("table_supprimer");
+		if (confirm("Voulez-vous vraiment supprimer ce fichier ?")){
+			//pr�paration de l'ajax pour la suppression
+			var retourInfos = document.getElementById("retourInfos");
+			if (window.FormData){
+				var fData = new FormData();
+			}
+			else{
+				alert ("FormData non support�");
+				return;
+			}
+			var varAjax = new XMLHttpRequest();
+			varAjax.open("post", "deleteFile.php", true);
+			varAjax.onreadystatechange = function(event){
+				if(this.readyState == 4){
+					retourInfos.innerHTML += event.target.responseText;
+					dtarget.deleteRow(rowIndex);
+				}
+			};
+
+
+			//pr�paration des infos de suppression � transmettre.
+			fData.append("idFile", idFile);
+			fData.append("id", id);
+
+			varAjax.send(fData);
+		}
+		else{
+			return;
+		}
+
 }

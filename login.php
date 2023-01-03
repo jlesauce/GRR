@@ -3,10 +3,15 @@
  * login.php
  * interface de connexion
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2019-10-10 10:20$
- * @author    Laurent Delineau & JeromeB & Yan Naessens
- * @copyright Copyright 2003-2019 Team DEVOME - JeromeB
+ * Dernière modification : $Date: 2009-12-16 14:52:31 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @author    Marc-Henri PAMISEUX <marcori@users.sourceforge.net>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @copyright Copyright 2008 Marc-Henri PAMISEUX
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   admin
+ * @version   $Id: login.php,v 1.10 2009-12-16 14:52:31 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -14,8 +19,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-include "personnalisation/connect.inc.php";
+include "include/connect.inc.php";
 include "include/config.inc.php";
 include "include/misc.inc.php";
 include "include/functions.inc.php";
@@ -29,35 +43,12 @@ if (!Settings::load())
 include "include/language.inc.php";
 // Session related functions
 require_once("./include/session.inc.php");
-
-if(Settings::get("redirection_https") == "yes"){
-	if(!isset($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on")
-	{
-		header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"], true, 301);
-		exit;
-	}
-}
-
 // Vérification du numéro de version et renvoi automatique vers la page de mise à jour
 if (verif_version())
 {
-	header("Location: ./installation/maj.php");
+	header("Location: ./admin/admin_maj.php");
 	exit();
 }
-
-// Si Token  n'est pas initialisé on le fait ici car s'est la 1ere page affiché 
-if(Settings::get("tokenprivee") == "")
-	Settings::set("tokenprivee",  generationToken());
-
-if(Settings::get("tokenpublic") == "")
-	Settings::set("tokenpublic",  generationToken());
-
-if(Settings::get("tokenapi") == "")
-	Settings::set("tokenapi",  generationToken());
-
-if(Settings::get("tokenuser") == "")
-	Settings::set("tokenuser",  generationToken());
-
 // User wants to be authentified
 if (isset($_POST['login']) && isset($_POST['password']))
 {
@@ -93,7 +84,7 @@ if (isset($_POST['login']) && isset($_POST['password']))
 	{
 		$message = get_vocab("echec_connexion_GRR");
 		$message .= "<br />". get_vocab("connexion_a_grr_non_autorisee");
-		$message .= "<br />". get_vocab("format_identifiant_incorrect");
+		$message .= "<br />". get_vocab("format identifiant incorrect");
 	}
 	else if ($result == "7")
 	{
@@ -122,24 +113,8 @@ if (isset($_POST['login']) && isset($_POST['password']))
 		$message .= "<br />". get_vocab("connexion_a_grr_non_autorisee");
 		$message .= "<br />". get_vocab("echec_authentification_imap");
 	}
-	else if ($result == "11")
+	else
 	{
-
-	}
-	else if ($result == "12")
-	{
-		header("Location: ./changepwd.php");
-	}
-	else if ($result == "13")
-	{
-		$message = get_vocab("echec_connexion_GRR");
-		$message .= "<br />". get_vocab("echec_authentification_horaire")." ".Settings::get("horaireconnexionde")." - ".Settings::get("horaireconnexiona");
-	}
-	else // la session est ouverte
-	{
-        // si c'est un administrateur qui se connecte, on efface les données anciennes du journal
-        nettoieLogConnexion($nbMaxJoursLogConnexion);
-		nettoieLogEmail($nbMaxJoursLogEmail);
 		if (isset($_POST['url']))
 		{
 			$url=rawurldecode($_POST['url']);
@@ -163,7 +138,7 @@ echo begin_page(get_vocab("mrbs").get_vocab("deux_points").Settings::get("compan
 <script type="text/javascript" src="js/functions.js" ></script>
 <div class="center">
 	<?php
-	$nom_picture = "./personnalisation/".$gcDossierImg."/logos/".Settings::get("logo");
+	$nom_picture = "./images/".Settings::get("logo");
 	if ((Settings::get("logo") != '') && (@file_exists($nom_picture)))
 		echo "<a href=\"javascript:history.back()\"><img src=\"".$nom_picture."\" alt=\"logo\" /></a>\n";"";
 	?>
@@ -198,6 +173,11 @@ echo begin_page(get_vocab("mrbs").get_vocab("deux_points").Settings::get("compan
 			echo "<p><span style=\"font-size:1.4em\"><a href=\"./index.php\">".get_vocab("authentification_lemon")."</a></span></p>";
 			echo "<p><b>".get_vocab("authentification_locale")."</b></p>";
 		}
+		if (Settings::get('sso_statut') == 'lcs')
+		{
+			echo "<p><span style=\"font-size:1.4em\"><a href=\"".LCS_PAGE_AUTHENTIF."\">".get_vocab("authentification_lcs")."</a></span></p>";
+			echo "<p><b>".get_vocab("authentification_locale")."</b></p>";
+		}
 		if ((Settings::get('sso_statut') == 'lasso_visiteur') || (Settings::get('sso_statut') == 'lasso_utilisateur'))
 		{
 			echo "<p><span style=\"font-size:1.4em\"><a href=\"./index.php\">".get_vocab("authentification_lasso")."</a></span></p>";
@@ -211,7 +191,6 @@ echo begin_page(get_vocab("mrbs").get_vocab("deux_points").Settings::get("compan
 		?>
 		<fieldset style="padding-top: 8px; padding-bottom: 8px; width: 40%; margin-left: auto; margin-right: auto;">
 			<legend class="fontcolor3" style="font-variant: small-caps;"><?php echo get_vocab("identification"); ?></legend>
-			<?php echo "<p>".get_vocab("mentions_legal_connexion")."</p>"; ?>
 			<table style="width: 100%; border: 0;" cellpadding="5" cellspacing="0">
 				<tr>
 					<td style="text-align: right; width: 40%; font-variant: small-caps;"><?php echo get_vocab("login"); ?></td>
@@ -242,13 +221,16 @@ echo begin_page(get_vocab("mrbs").get_vocab("deux_points").Settings::get("compan
 		if ($lien != "")
 			echo "<p>[".$lien."]</p>";
 	}
-	echo "<p>[<a href='app.php?p=page&page=CGU' target='_blank'>".get_vocab("cgu")."</a>]</p>";
-	echo "<a href=\"javascript:history.back()\">".get_vocab("previous")." - <b>".Settings::get("company")."</b></a>";
+	echo "<a href=\"javascript:history.back()\">Précedent";
+	echo " - <b>".Settings::get("company")."</b></a>";
 	?>
 	<br />
 	<br />
 	<?php
-	echo "<br /><p class=\"small\"><a href=\"".$grr_devel_url."\">".get_vocab("mrbs")."</a>";
+	echo "<br /><p class=\"small\"><a href=\"".$grr_devel_url."\">".get_vocab("mrbs")."</a> - ".get_vocab("grr_version").affiche_version();
+	$email = explode('@',$grr_devel_email);
+	$person = $email[0];
+	$domain = $email[1];
 	echo "<br />".get_vocab("msg_login1")."<a href=\"".$grr_devel_url."\">".$grr_devel_url."</a>";
 	?>
 </div>

@@ -1,19 +1,4 @@
 <?php
-/* settings.class.php
- * Permet de lire et d'écrire les paramètres dans la BDD (Table setting)
- * Dernière modification : $Date: 2017-12-16 14:00$
- * @author    JeromeB & Laurent Delineau
- * @copyright Copyright 2003-2020 Team DEVOME - JeromeB
- * @link      http://www.gnu.org/licenses/licenses.html
- *
- * This file is part of GRR.
- *
- * GRR is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
 class Settings {
 
 	static $grrSettings;
@@ -50,20 +35,6 @@ class Settings {
 			return self::$grrSettings[$_name];
 	}
 
-	static function getAll()
-	{
-		$AllSettings = array();
-		$sql_query="SELECT name,value FROM ".TABLE_PREFIX."_setting ";
-		$res=grr_sql_query($sql_query);
-		$i = 0;
-		while($row = grr_sql_row($res, $i)){
-			$AllSettings[$row[0]] = $row[1];
-			$i++;
-		}
-		
-		return $AllSettings;
-	}
-
 	static function set($_name, $_value)
 	{
 		if (isset(self::$grrSettings[$_name]))
@@ -82,13 +53,6 @@ class Settings {
 		}
 		self::$grrSettings[$_name] = $_value;
 		return true;
-	}
-
-	static function delette($name)
-	{
-		$AllSettings = array();
-		$sql_query="DELETE FROM ".TABLE_PREFIX."_setting WHERE NAME = '" . protect_data_sql($name) . "'";
-		$res=grr_sql_query($sql_query);
 	}
 }
 ?>

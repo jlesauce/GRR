@@ -3,10 +3,13 @@
  * generationxmlplus.php
  *
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2017-12-16 14:00$
+ * Dernière modification : $Date: 2009-01-20 07:19:17 $
  * @author    JeromeB
- * @copyright Copyright 2003-2020 Team DEVOME - JeromeB
+ * @copyright Copyright 201-2015 JeromeB
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: generationxmlplus.php,v 1.3 2009-01-20 07:19:17 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -14,7 +17,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+ 
 
 $temp = time();
 $result = grr_sql_query("SELECT * FROM ".TABLE_PREFIX."_entry WHERE end_time > '{$temp}';");
@@ -56,7 +69,7 @@ $export.="</RESERVATIONS>";
 //file_put_contents("export.xml", $export);
 //echo "<a href='export.xml' target='_blank'>Export database as XML</a>";
 
-$txt_file = "./export/exportplus".TABLE_PREFIX.".xml";
+$txt_file = "./export/exportplus.xml";
 
 $create_xml = fopen($txt_file,"w"); 
 

@@ -1,11 +1,14 @@
 <?php
 /**
- * moderate_entry_do.php
+ * moderate_entry_do
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2017-12-16 14:00$
- * @author    Laurent Delineau & JeromeB
- * @copyright Copyright 2003-2020 Team DEVOME - JeromeB
+ * Dernière modification : $Date: 2009-04-14 12:59:17 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: moderate_entry_do.php,v 1.7 2009-04-14 12:59:17 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -13,8 +16,17 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-include "personnalisation/connect.inc.php";
+include "include/connect.inc.php";
 include "include/config.inc.php";
 include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
@@ -81,7 +93,7 @@ if ($series == 0)
 	$res = grr_sql_query($sql);
 	if (!$res)
 		fatal_error(0, grr_sql_error());
-	if (!(grr_add_ligne_moderation($_POST['id'],getUserName(),$_POST['description'])))
+	if (!(grr_backup($_POST['id'],getUserName(),$_POST['description'])))
 		fatal_error(0, grr_sql_error());
 	$tab_id_moderes = array();
 }
@@ -113,7 +125,7 @@ else
 			$res = grr_sql_query($sql);
 			if (!$res)
 				fatal_error(0, grr_sql_error());
-			if (!(grr_add_ligne_moderation($entry_tom,getUserName(),$_POST['description'])))
+			if (!(grr_backup($entry_tom,getUserName(),$_POST['description'])))
 				fatal_error(0, grr_sql_error());
 			// Backup : on enregistre les infos dans ".TABLE_PREFIX."_entry_moderate
 			// On constitue un tableau des réservations modérées
@@ -129,11 +141,10 @@ if ($_POST['moderate'] != 1)
 	// on efface l'entrée de la base
 	if ($series == 0)
 	{
-		$sql = "UPDATE ".TABLE_PREFIX."_entry SET supprimer = 1 WHERE id = ".$_POST['id'];
+		$sql = "DELETE FROM ".TABLE_PREFIX."_entry WHERE id = ".$_POST['id'];
 		$res = grr_sql_query($sql);
 		if (!$res)
 			fatal_error(0, grr_sql_error());
-		insertLogResa($_POST['id'], 5, "Via modération");
 	}
 	else
 	{
@@ -148,14 +159,11 @@ if ($_POST['moderate'] != 1)
 			$test = grr_sql_query1("SELECT count(id) FROM ".TABLE_PREFIX."_entry_moderate WHERE id = '".$entry_tom."' and moderate='3'");
 			// Si oui, on supprime la réservation
 			if ($test > 0)
-			{
-				$del = grr_sql_query("UPDATE ".TABLE_PREFIX."_entry SET supprimer = 1 WHERE id = '".$entry_tom."'");
-				insertLogResa($entry_tom, 5, "Via modération périodicité");
-			}
+				$del = grr_sql_query("DELETE FROM ".TABLE_PREFIX."_entry WHERE id = '".$entry_tom."'");
 		}
 		// On supprime l'info de périodicité
 		$del_repeat = grr_sql_query("DELETE FROM ".TABLE_PREFIX."_repeat WHERE id='".$repeat_id."'");
-		$dupdate_repeat = grr_sql_query("UPDATE ".TABLE_PREFIX."_entry set repeat_id = '0' WHERE repeat_id='".$repeat_id."'");
+		$dupdate_repeat = grr_sql_query("UPDATE ".TABLE_PREFIX."_entry set repead_id = '0' WHERE repead_id='".$repeat_id."'");
 	}
 }
 $back = 'view_entry.php?id='.$_POST['id'].'&page='.$_POST['page'];

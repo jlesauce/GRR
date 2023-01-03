@@ -2,10 +2,14 @@
 /**
  * config.inc.php
  * Fichier de configuration de GRR
- * Dernière modification : $Date: 2017-12-16 14:00$
- * @author    JeromeB & Laurent Delineau
- * @copyright Copyright 2003-2020 Team DEVOME - JeromeB
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-12-02 20:11:08 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: config.inc.php,v 1.7 2009-12-02 20:11:08 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -13,13 +17,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
-### A LIRE ###
-# Il est préférable de pas modifier ce fichier, car celui-ci sera écrasé lors des mises à jours
-# Nous conseillons de creer un fichier dans le dossier peronnalisation en l'appelant "configperso.inc.php"
-# Dans ce dernier ajouter les variables souhaité avec les valeurs souhaité, vos valeurs écraserons celles de ce fichier
-##############
 
 /*
 Problème de sessions qui expirent prématurément :
@@ -56,14 +63,7 @@ $nb_year_calendar = 10;
  En résumé, pour activer cette fonctionnalité, décommentez la ligne suivante (en supprimant le premier caractère #,
  et remplacez -7 par +n ou -n où "n" est le nombre d'heures d'avance ou de retard de GRR sur l'heure système du serveur.
 */
-// putenv("TZ=posix/Etc/GMT+0");
-// putenv("TZ=America/Toronto");
-/* pour compatibilité php >= 5.1.0 et php 7, on n'utilisera pas la fonction ptuenv et la constante TZ, mais la fonction 
-date_default_timezone_set("votre_time_zone"); en remplaçant "votre_time_zone" par votre time zone, dont la liste est disponible ici :
-http://php.net/manual/fr/timezones.php
-*/
-date_default_timezone_set('Europe/Paris');
-
+ putenv("TZ=posix/Etc/GMT+0");
 
 # Changement d'heure été<->hiver
 # $correct_heure_ete_hiver = 1 => GRR prend en compte les changements d'heure
@@ -106,47 +106,6 @@ date_default_timezone_set('Europe/Paris');
 # Sinon, positionnez la variable suivante a "0"; (valeur par defaut = 1)
  $use_function_html_entity_decode = 1;
 
-#Requiert Connexion pour mettre à jour la BDD || 0: non ; 1: oui - Defaut 1
-$connexionAdminMAJ = 1;
-
-#L'admin peut restaurer une base depuis l'administration || 0: non ; 1: oui - Defaut 1
-$restaureBBD = 1;
-
-#Mode debug || 0: non ; 1: oui - Defaut 0
-$debug_flag = 0;
-
-#Rechercher des MAJ sur le serveur grr.devome.com || 0: non ; 1: oui - Defaut 1
-$recherche_MAJ = 1;
-
-#Activer la possibilité d'utiliser l'option forcer MAJ || 0: non ; 1: oui - Defaut 1
-$forcer_MAJ = 1;
-
-#Possibilité d'upload de module || 0: non ; 1: oui - Defaut 1
-$upload_Module = 1;
-
-# Nb de jour maximum que l'on garde les logs de connexions, 0 = aucune limite
-$nbMaxJoursLogConnexion = 365;
-
-# Nb de jour maximum que l'on garde les logs de connexions, 0 = aucune limite
-$nbMaxJoursLogEmail = 365;
-
-# Algorythme de cryptage des comptes utilisateur, ne pas changer après installation sauf si reset des mots de passes. Défaut : ripemd320
-$algoPwd = 'ripemd320';
-
-##############################
-# ANTI-FLOOD - ENVOIS DE MAIL #
-##############################
-
-#init nb mail
-$gNbMail = 0;
-#nb de mail max par chargement de page || -1 aucune limite, 0 blocage d'envois de mail, > 0 Nb max de mails - Defaut 30
-$gMaxMail = 30;
-
-##################################################
-# Cas d'une authentification via config.inc.php  #
-##################################################
-$motDePasseConfig = ""; // vide = ignoré
-
 ###################################
 # Cas d'une authentification SSO  #
 ###################################
@@ -159,27 +118,9 @@ $sso_super_admin = false;
 
 /*
  $sso_restrictions : false|true
- Mettre la valeur du paramètre $sso_restrictions à "true" permet de cacher dans l'interface de GRR l'affichage de la rubrique "Configuration SSO"
+ Mettre la valeur du paramètre $sso_restrictions à "true" permet de cacher dans l'interface de GRR l'affichage de la rubrique "Authentification et ldap"
 */
  $sso_restrictions = false;
-
-/*
- $ldap_restrictions : false|true
- Mettre la valeur du paramètre $ldap_restrictions à "true" permet de cacher dans l'interface de GRR l'affichage de la rubrique "Configuration LDAP"
-*/
- $ldap_restrictions = false;
-
-/*
- $imap_restrictions : false|true
- Mettre la valeur du paramètre $imap_restrictions à "true" permet de cacher dans l'interface de GRR l'affichage de la rubrique "Configuration IMAP"
-*/
- $imap_restrictions = false;
-
-/*
- $fonction_mail_restrictions : false|true
- Mettre la valeur du paramètre $fonction_mail_restrictions à "true" rend impossible la selection de la fonction "mail" du serveur pour l'envois de mail
-*/
- $fonction_mail_restrictions = false;
 
 // Le paramètre $Url_CAS_setFixedServiceURL est le paramètre utilisé dans la méthode phpCAS::setFixedServiceURL(), dans le fichier cas.inc.php
 // Si ce paramètre est non vide, il sera utilisé par le service CAS
@@ -193,6 +134,51 @@ $sso_super_admin = false;
 // Indiquez ci-dessous le répertoire d'installation du package spkitlasso
 // (la valeur par défaut le cherche dans le 'include_path' de PHP)
  define('SPKITLASSO',"spkitlasso");
+
+##############################################################
+# Paramètres propres à une authentification sur un serveur LCS
+##############################################################
+# Page d'authentification LCS
+ define('LCS_PAGE_AUTHENTIF',"../../lcs/auth.php");
+# Page de la librairie ldap
+ define('LCS_PAGE_LDAP_INC_PHP',"/var/www/Annu/includes/ldap.inc.php");
+# Réalise la connexion à la base d'authentification du LCS et include des fonctions de lcs/includes/functions.inc.php
+ define('LCS_PAGE_AUTH_INC_PHP',"/var/www/lcs/includes/headerauth.inc.php");
+
+#############
+# Entry Types
+#############
+# Les lignes ci-dessous correspondent aux couleurs disponibles pour les types de réservation
+# Vous pouvez modifier les couleurs ou même en rajouter à votre convenance.
+//~ $tab_couleur[1] = "#F49AC2"; # mauve pâle
+//~ $tab_couleur[2] = "#99CCCC"; # bleu
+//~ $tab_couleur[3] = "#FF9999"; # rose pâle
+//~ $tab_couleur[4] = "#95a5a6"; # concrete
+//~ $tab_couleur[5] = "#C0E0FF"; # bleu-vert
+//~ $tab_couleur[6] = "#FFCC99"; # pêche
+//~ $tab_couleur[7] = "#e74c3c"; # rouge
+//~ $tab_couleur[8] = "#3498db"; # bleu "aqua"
+//~ $tab_couleur[9] = "#DDFFDD"; # vert clair
+//~ $tab_couleur[10] = "#34495e"; # gris
+//~ $tab_couleur[11] = "#2ecc71"; # vert pâle
+//~ $tab_couleur[12] = "#9b59b6"; # violet
+//~ $tab_couleur[13] = "#f1c40f"; # jaune
+//~ $tab_couleur[14] = "#FF00DE"; # rose
+//~ $tab_couleur[15] = "#2ecc71"; # vert
+//~ $tab_couleur[16] = "#e67e22"; # orange
+//~ $tab_couleur[17] = "#bdc3c7"; # gris clair
+//~ $tab_couleur[18] = "#C000FF"; # Mauve
+//~ $tab_couleur[19] = "#FF0000"; # rouge vif
+//~ $tab_couleur[20] = "#FFFFFF"; # blanc
+//~ $tab_couleur[21] = "#A0A000"; # Olive verte
+//~ $tab_couleur[22] = "#f39c12"; # marron goldenrod
+//~ $tab_couleur[23] = "#1abc9c"; # turquoise
+//~ $tab_couleur[24] = "#9b59b6"; # amethyst
+//~ $tab_couleur[25] = "#4169E1"; # bleu royal
+//~ $tab_couleur[26] = "#6A5ACD"; # bleu ardoise
+//~ $tab_couleur[27] = "#AA5050"; # bordeaux
+//~ $tab_couleur[28] = "#FFBB20"; # pêche
+
 
 ###################
 # Database settings
@@ -216,19 +202,7 @@ $insertComplet = false;
 
 # Global settings array
 $grrSettings = array();
-$grrPages = array();
 
 # Make sure notice errors are not reported
 #error_reporting (E_ALL ^ E_NOTICE);
-
-# Création d'un dossier personnalisation pour mettre tout fichiers importé modifié par les utilisateurs de GRR
-$gcDossierCss = "css";
-$gcDossierImg = "images";
-$gcDossierXml = "xml";
-
-if(file_exists('../personnalisation/configperso.inc.php'))
-	include('../personnalisation/configperso.inc.php');
-if(file_exists('./personnalisation/configperso.inc.php'))
-	include('./personnalisation/configperso.inc.php');
-
 ?>

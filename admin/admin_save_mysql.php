@@ -1,12 +1,15 @@
 <?php
 /**
  * admin_save_mysql.php
- * Script de sauvegarde de la base de données mysql
+ * Script de sauvegarde de la base de donnée mysql
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2021-05-31 18:26$
- * @author    Laurent Delineau & JeromeB
- * @copyright Copyright 2003-2020 Team DEVOME - JeromeB
+ * Dernière modification : $Date: 2009-12-16 14:52:31 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_save_mysql.php,v 1.8 2009-12-16 14:52:31 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -14,8 +17,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 $grr_script_name = "admin_save_mysql.php";
 if ((!isset($_GET['mdp'])) && (!isset($argv[1])) && (!isset($_GET['flag_connect'])))
 {
@@ -145,8 +156,8 @@ while ($j < count($liste_tables))
 		$schema = $row[1].";";
 		$fd.="$schema\n";
 	}
-	//On ne sauvegarde pas les données des tables de logs
-	if ($donnees && $temp!="".TABLE_PREFIX."_log" && $temp!="".TABLE_PREFIX."_log_mail")
+	//On ne sauvegarde pas les données de la table ".TABLE_PREFIX."_log
+	if ($donnees && $temp!="".TABLE_PREFIX."_log")
 	{
 		// les données de la table
 		$fd.="#\n# Données de $temp\n#\n";
@@ -165,7 +176,7 @@ while ($j < count($liste_tables))
 				{
 					for ($k = 0; $k < $num_fields; $k++)
 					{
-						$sFieldnames .= "`".mysqli_fetch_field_direct($resData, $k)->name ."`";
+						$sFieldnames .= "`".mysql_field_name($resData, $k) ."`";
 						//on ajoute à la fin une virgule si nécessaire
 						if ($k<$num_fields-1)
 							$sFieldnames .= ", ";
@@ -193,6 +204,4 @@ while ($j < count($liste_tables))
 }
 $fd.="#********* fin du fichier ***********";
 echo $fd;
-
-Settings::set("backup_date", time());
 ?>

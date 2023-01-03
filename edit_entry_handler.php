@@ -1,12 +1,15 @@
 <?php
 /**
  * edit_entry_handler.php
- * Permet de vérifier la validité de l'édition ou de la création d'une réservation
+ * Permet de vérifier la validitée de l'édition ou de la création d'une réservation
  * Ce script fait partie de l'application GRR
- * Dernière modification : $Date: 2022-06-19 15:52$
- * @author    Laurent Delineau & JeromeB & Yan Naessens
- * @copyright Copyright 2003-2022 Team DEVOME - JeromeB
+ * Dernière modification : $Date: 2010-03-03 14:41:34 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
  * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: edit_entry_handler.php,v 1.12 2010-03-03 14:41:34 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -14,15 +17,23 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-// YN le 30-06-18 : il me semble que des vérifications sont déjà faites par validate_and_submit() dans edit_entry.php et sont reprises ici 
-$grr_script_name = "edit_entry_handler.php";
-include "personnalisation/connect.inc.php";
+include "include/connect.inc.php";
 include "include/config.inc.php";
-include "include/misc.inc.php";
+include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
 include "include/mrbs_sql.inc.php";
-include "include/functions.inc.php";
+include "include/misc.inc.php";
+$grr_script_name = "edit_entry_handler.php";
 // Settings
 require_once("./include/settings.class.php");
 //Chargement des valeurs de la table settingS
@@ -50,9 +61,9 @@ else
 $name = isset($_GET["name"]) ? $_GET["name"] : NULL;
 if ((!isset($name) or (trim($name) == "")) && (Settings::get("remplissage_description_breve") == '1'))
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>".get_vocab("required")."</h2>";
-	end_page();
+	include "include/trailer.inc.php";
 	die();
 }
 $description = isset($_GET["description"]) ? $_GET["description"] : NULL;
@@ -67,19 +78,15 @@ if ($courrier == 'y')
 	$courrier = 1;
 else
 	$courrier = 0;
-$nbparticipantmax = isset($_GET["nbparticipantmax"]) ? $_GET["nbparticipantmax"] : 0;
-$day = isset($_GET["start_day"]) ? clean_input($_GET["start_day"]) : NULL;
-$month = isset($_GET["start_month"]) ? clean_input($_GET["start_month"]) : NULL;
-$year = isset($_GET["start_year"]) ? clean_input($_GET["start_year"]) : NULL;
-$duration = isset($_GET["duration"]) ? clean_input($_GET["duration"]) : NULL;
+$day = isset($_GET["start_day"]) ? $_GET["start_day"] : NULL;
+$month = isset($_GET["start_month"]) ? $_GET["start_month"] : NULL;
+$year = isset($_GET["start_year"]) ? $_GET["start_year"] : NULL;
+$duration = isset($_GET["duration"]) ? $_GET["duration"] : NULL;
 $duration = str_replace(",", ".", "$duration ");
-
-if (isset($_GET["start_"])){
-	$debut = array();
-	$debut = explode(':', $_GET["start_"]);
-	$hour = $debut[0];
-	$minute = $debut[1];
-}
+$debut = array();
+$debut = explode(':', $_GET["start_"]);
+$hour = $debut[0];
+$minute = $debut[1];
 if (isset($hour))
 {
 	settype($hour, "integer");
@@ -94,7 +101,6 @@ if (isset($minute))
 }
 $statut_entry = isset($_GET["statut_entry"]) ? $_GET["statut_entry"] : "-";
 $rep_jour_c = isset($_GET["rep_jour_"]) ? $_GET["rep_jour_"] : 0;
-$rep_jour_c = intval(clean_input($rep_jour_c));
 $type = isset($_GET["type"]) ? $_GET["type"] : NULL;
 $rep_type = isset($_GET["rep_type"]) ? $_GET["rep_type"] : NULL;
 if (isset($rep_type))
@@ -115,21 +121,19 @@ if (isset($rep_month_abs1))
 	settype($rep_month_abs1,"integer");
 if (isset($rep_month_abs2))
 	settype($rep_month_abs2,"integer");
-$create_by = isset($_GET["create_by"]) ? clean_input($_GET["create_by"]) : NULL;
-$beneficiaire = isset($_GET["beneficiaire"]) ? clean_input($_GET["beneficiaire"]) : "";
-$benef_ext_nom = isset($_GET["benef_ext_nom"]) ? clean_input($_GET["benef_ext_nom"]) : "";
-$benef_ext_email = isset($_GET["benef_ext_email"]) ? clean_input($_GET["benef_ext_email"]) : "";
+$create_by = isset($_GET["create_by"]) ? $_GET["create_by"] : NULL;
+$beneficiaire = isset($_GET["beneficiaire"]) ? $_GET["beneficiaire"] : "";
+$benef_ext_nom = isset($_GET["benef_ext_nom"]) ? $_GET["benef_ext_nom"] : "";
+$benef_ext_email = isset($_GET["benef_ext_email"]) ? $_GET["benef_ext_email"] : "";
 $beneficiaire_ext = concat_nom_email($benef_ext_nom, $benef_ext_email);
 $rep_id = isset($_GET["rep_id"]) ? $_GET["rep_id"] : NULL;
 $rep_day = isset($_GET["rep_day"]) ? $_GET["rep_day"] : NULL;
-$rep_end_day = isset($_GET["rep_end_day"]) ? clean_input($_GET["rep_end_day"]) : NULL;
-$rep_end_month = isset($_GET["rep_end_month"]) ? clean_input($_GET["rep_end_month"]) : NULL;
-$rep_end_year = isset($_GET["rep_end_year"]) ? clean_input($_GET["rep_end_year"]) : NULL;
+$rep_end_day = isset($_GET["rep_end_day"]) ? $_GET["rep_end_day"] : NULL;
+$rep_end_month = isset($_GET["rep_end_month"]) ? $_GET["rep_end_month"] : NULL;
+$rep_end_year = isset($_GET["rep_end_year"]) ? $_GET["rep_end_year"] : NULL;
 $room_back = isset($_GET["room_back"]) ? $_GET["room_back"] : NULL;
-$oldRessource = isset($_GET["oldRessource"]) ? clean_input($_GET["oldRessource"]) : NULL;
-if (isset($room_back) && ($room_back != 'all'))
+if (isset($room_back))
 	settype($room_back,"integer");
-else $room_back = 'all'; // YN le 30-06-18
 $page = verif_page();
 if ($page == '')
 	$page = "day";
@@ -147,35 +151,31 @@ if (($beneficiaire) == "")
 {
 	if ($beneficiaire_ext == "-1")
 	{
-		start_page_w_header();
+		print_header();
 		echo "<h2>".get_vocab("required")."</h2>";
-		end_page();
+		include "include/trailer.inc.php";
 		die();
 	}
 	if ($beneficiaire_ext == "-2")
 	{
-		start_page_w_header();
+		print_header();
 		echo "<h2>Adresse email du bénéficiaire incorrecte</h2>";
-		end_page();
+		include "include/trailer.inc.php";
 		die();
 	}
 }
 else
 	$beneficiaire_ext = "";
-if ((!isset($_GET['rooms'][0])||(intval($_GET['rooms'][0])==0)))
+if (!isset($_GET['rooms'][0]))
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>".get_vocab("choose_a_room")."</h2>";
-	end_page();
+	include "include/trailer.inc.php";
 	die();
 }
-$back = (isset($_SERVER['HTTP_REFERER']))? htmlspecialchars($_SERVER['HTTP_REFERER']) :'';
-//if (isset($_SERVER['HTTP_REFERER']))
-//	$back = htmlspecialchars($_SERVER['HTTP_REFERER']);
-// page de retour
-$ret_page = (isset($_GET['page_ret']))? $_GET['page_ret'] : $back;
-
-$area = mrbsGetRoomArea(intval($_GET['rooms'][0]));
+if (isset($_SERVER['HTTP_REFERER']))
+	$back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+$area = mrbsGetRoomArea($_GET['rooms'][0]);
 $overload_data = array();
 $overload_fields_list = mrbsOverloadGetFieldslist($area);
 foreach ($overload_fields_list as $overfield=>$fieldtype)
@@ -184,20 +184,18 @@ foreach ($overload_fields_list as $overfield=>$fieldtype)
 	$fieldname = "addon_".$id_field;
 	if (($overload_fields_list[$overfield]["obligatoire"] == 'y') && ((!isset($_GET[$fieldname])) || (trim($_GET[$fieldname]) == "")))
 	{
-		start_page_w_header();
+		print_header();
 		echo "<h2>".get_vocab("required")."</h2>";
-		// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-        echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-		end_page();
+		echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+		include "include/trailer.inc.php";
 		die();
 	}
 	if (($overload_fields_list[$overfield]["type"] == "numeric") && (isset($_GET[$fieldname])) && ($_GET[$fieldname] != '') && (!preg_match("`^[0-9]*\.{0,1}[0-9]*$`",$_GET[$fieldname])))
 	{
-		start_page_w_header();
+		print_header();
 		echo "<h2>".$overload_fields_list[$overfield]["name"].get_vocab("deux_points").get_vocab("is_not_numeric")."</h2>";
-		// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-        echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-		end_page();
+		echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+		include "include/trailer.inc.php";
 		die();
 	}
 	if (isset($_GET[$fieldname]))
@@ -219,28 +217,27 @@ if (authGetUserLevel(getUserName(), -1) < 1)
 }
 if (check_begin_end_bookings($day, $month, $year))
 {
-	/*if ((Settings::get("authentification_obli") == 0) && (getUserName() == ''))
+	if ((Settings::get("authentification_obli") == 0) && (getUserName() == ''))
 		$type_session = "no_session";
 	else
-		$type_session = "with_session"; */
-    // cela ma semble inutile ici YN le 04/03/2018
-	showNoBookings($day, $month, $year, $back); //."&amp;Err=yes");
+		$type_session = "with_session";
+	showNoBookings($day, $month, $year, $back."&amp;Err=yes");
 	exit();
 }
 if ($type_affichage_reser == 0)
 {
-	$period = isset($_GET["period"]) ? clean_input($_GET["period"]) : NULL;
+	$period = isset($_GET["period"]) ? $_GET["period"] : NULL;
 	if (isset($period))
 		settype($period,"integer");
-	$dur_units = isset($_GET["dur_units"]) ? clean_input($_GET["dur_units"]) : NULL;
-	$all_day = isset($_GET["all_day"]) ? clean_input($_GET["all_day"]) : NULL;
+	$dur_units = isset($_GET["dur_units"]) ? $_GET["dur_units"] : NULL;
+	$all_day = isset($_GET["all_day"]) ? $_GET["all_day"] : NULL;
 	if ($enable_periods == 'y')
 	{
 		$resolution = 60;
 		$hour = 12;
 		$minute = $period;
 		$max_periods = count($periods_name);
-		if ( $dur_units == "periods" && (((int)$minute + (int)$duration) > $max_periods))
+		if ( $dur_units == "periods" && ($minute + $duration) > $max_periods)
 			$duration = (24 * 60 * floor($duration / $max_periods)) + ($duration % $max_periods);
 	}
 	$units = 1.0;
@@ -270,7 +267,7 @@ if ($type_affichage_reser == 0)
 		else
 		{
 			$starttime = mktime($morningstarts, 0, 0, $month, $day  , $year);
-			$endtime   = mktime($eveningends, $eveningends_minutes, 0, $month, $day, $year);
+			$endtime   = mktime($eveningends, 0, $resolution, $month, $day, $year);
 		}
 	}
 	else
@@ -281,7 +278,7 @@ if ($type_affichage_reser == 0)
 				$hour += 12;
 		}
 		$starttime = mktime($hour, $minute, 0, $month, $day, $year);
-		$endtime   = mktime($hour, $minute, 0, $month, $day, $year) + intval($units) * floatval($duration);
+		$endtime   = mktime($hour, $minute, 0, $month, $day, $year) + ($units * $duration);
 		if ($endtime <= $starttime)
 			$erreur = 'y';
 		$diff = $endtime - $starttime;
@@ -297,45 +294,32 @@ else
 		$hour = 12;
 		$_GET["end_hour"] = 12;
 		if (isset($_GET["period"]))
-			$minute = clean_input($_GET["period"]);
+			$minute = $_GET["period"];
 		else
 			$erreur = 'y';
 		if (isset($_GET["end_period"]))
-			$_GET["end_minute"] = clean_input($_GET["end_period"]) + 1;
+			$_GET["end_minute"] = $_GET["end_period"] + 1;
 		else
 			$erreur = 'y';
 	}
-	else {
-		$fin = array();
-		$fin = explode(':', clean_input($_GET["end_"]));
-		$_GET["end_hour"] = $fin[0];
-		$_GET["end_minute"] = $fin[1];
-	}
-
-	if (!isset($_GET["end_day"]) || !isset($_GET["end_month"]) || !isset($_GET["end_year"]) || !isset($_GET["end_hour"]) || !isset($_GET["end_minute"]) )
+	if (!isset($_GET["end_day"]) || !isset($_GET["end_month"]) || !isset($_GET["end_year"]) || !isset($_GET["end_"]))
 		$erreur = 'y';
 	else
 	{
 		$end_day = $_GET["end_day"];
 		$end_year = $_GET["end_year"];
 		$end_month = $_GET["end_month"];
-		$end_hour = $_GET["end_hour"];
-        $end_minute = $_GET["end_minute"];
-
-		/*
 		$fin = array();
 		$fin = explode(':', $_GET["end_"]);
 		$end_hour = $fin[0];
 		$end_minute = $fin[1];
-		*/
-
 		settype($end_month, "integer");
 		settype($end_day, "integer");
 		settype($end_year, "integer");
 		settype($end_minute, "integer");
 		settype($end_hour, "integer");
-		$minyear = date('Y', Settings::get("begin_bookings"));
-		$maxyear = date('Y', Settings::get("end_bookings"));
+		$minyear = strftime("%Y", Settings::get("begin_bookings"));
+		$maxyear = strftime("%Y", Settings::get("end_bookings"));
 		if ($end_day < 1)
 			$end_day = 1;
 		if ($end_day > 31)
@@ -363,11 +347,10 @@ if ($endtime <= $starttime)
 	$erreur = 'y';
 if ($erreur == 'y')
 {
-	start_page_w_header();
-	echo "<h2>".get_vocab('error_end_date')."</h2>";
-	//echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	print_header();
+	echo "<h2>Erreur dans la date de fin de r&eacute;servation</h2>";
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if (isset($rep_type) && isset($rep_end_month) && isset($rep_end_day) && isset($rep_end_year))
@@ -390,11 +373,10 @@ $year_temp  = date("Y",$endtime);
 $endtime_midnight = mktime(0, 0, 0, $month_temp, $day_temp, $year_temp);
 if (resa_est_hors_reservation($starttime_midnight , $endtime_midnight))
 {
-	start_page_w_header();
-	echo "<h2>".get_vocab('error_begin_end_date')."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	print_header();
+	echo "<h2>Erreur dans la date de début ou de fin de réservation</h2>";
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 $rep_opt = "";
@@ -427,11 +409,7 @@ $error_date_option_reservation = 'no';
 $error_chevaussement = 'no';
 $error_qui_peut_reserver_pour = 'no';
 $error_heure_debut_fin = 'no';
-$rooms = array();
-foreach ($_GET['rooms'] as $room_id){
-    $rooms[] = intval(clean_input($room_id));
-}
-foreach ( $rooms as $room_id )
+foreach ( $_GET['rooms'] as $room_id )
 {
 	if ($rep_type != 0 && !empty($reps))
 	{
@@ -498,7 +476,7 @@ foreach ( $rooms as $room_id )
 $err = "";
 if (($error_booking_in_past == 'no') && ($error_chevaussement == 'no') && ($error_duree_max_resa_area == 'no') && ($error_delais_max_resa_room == 'no') && ($error_delais_min_resa_room == 'no')  && ($error_date_option_reservation == 'no') && ($error_qui_peut_reserver_pour == 'no') && ($error_heure_debut_fin == 'no'))
 {
-	foreach ($rooms as $room_id)
+	foreach ($_GET['rooms'] as $room_id)
 	{
 		if ($rep_type != 0 && !empty($reps))
 		{
@@ -534,7 +512,7 @@ if (($error_booking_in_past == 'no') && ($error_chevaussement == 'no') && ($erro
 if (empty($err) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_area == 'no') && ($error_delais_max_resa_room == 'no') && ($error_delais_min_resa_room == 'no') && ($error_booking_room_out == 'no') && ($error_date_option_reservation == 'no') && ($error_chevaussement == 'no') && ($error_qui_peut_reserver_pour == 'no') && ($error_heure_debut_fin == 'no'))
 {
 	$compt_room = 0;
-	foreach ($rooms as $room_id)
+	foreach ($_GET['rooms'] as $room_id)
 	{
 		$area = mrbsGetRoomArea($room_id);
 		if (isset($id) && ($id != 0))
@@ -575,7 +553,7 @@ if (empty($err) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_ar
 				$compt_room += 1;
 		}
 	}
-	foreach ($rooms as $room_id)
+	foreach ($_GET['rooms'] as $room_id)
 	{
 		$moderate = grr_sql_query1("SELECT moderate FROM ".TABLE_PREFIX."_room WHERE id = '".$room_id."'");
 		if ($moderate == 1)
@@ -609,7 +587,7 @@ if (empty($err) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_ar
 		}
 		if ($rep_type != 0)
 		{
-			mrbsCreateRepeatingEntrys($starttime, $endtime, $rep_type, $rep_enddate, $rep_opt, $room_id, $create_by, $beneficiaire, $beneficiaire_ext, $name, $type, $description, $rep_num_weeks, $option_reservation, $overload_data, $entry_moderate, $rep_jour_c, $courrier, $nbparticipantmax, $rep_month_abs1, $rep_month_abs2);
+			mrbsCreateRepeatingEntrys($starttime, $endtime, $rep_type, $rep_enddate, $rep_opt, $room_id, $create_by, $beneficiaire, $beneficiaire_ext, $name, $type, $description, $rep_num_weeks, $option_reservation, $overload_data, $entry_moderate, $rep_jour_c, $courrier, $rep_month_abs1, $rep_month_abs2);
 			if (Settings::get("automatic_mail") == 'yes')
 			{
 				if (isset($id) && ($id != 0))
@@ -617,7 +595,7 @@ if (empty($err) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_ar
 					if ($send_mail_moderate)
 						$message_error = send_mail($id_first_resa, 5, $dformat);
 					else
-						$message_error = send_mail($id_first_resa, 2, $dformat, array(), $oldRessource);
+						$message_error = send_mail($id_first_resa, 2, $dformat);
 				}
 				else
 				{
@@ -634,65 +612,40 @@ if (empty($err) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_ar
 				$entry_type = 2;
 			else
 				$entry_type = 0;
-			if($id > 0)
-				$differenceAvAp = compareEntrys($id, $starttime, $endtime, $entry_type, $repeat_id, $room_id, $create_by, $beneficiaire, $beneficiaire_ext, $name, $type, $description, $option_reservation, $overload_data, $entry_moderate, $rep_jour_c, $statut_entry, $keys, $courrier,$nbparticipantmax);
-			mrbsCreateSingleEntry($id, $starttime, $endtime, $entry_type, $repeat_id, $room_id, $create_by, $beneficiaire, $beneficiaire_ext, $name, $type, $description, $option_reservation, $overload_data, $entry_moderate, $rep_jour_c, $statut_entry, $keys, $courrier,$nbparticipantmax);
-			if($id == 0 || $id == NULL)
-			{
-				$id = grr_sql_insert_id();
-				insertLogResa($id, 1, 'Création via calendrier');
-			}
-			else
-			{
-				insertLogResa($id, 2, $differenceAvAp);
-			}
-				
+			mrbsCreateSingleEntry($starttime, $endtime, $entry_type, $repeat_id, $room_id, $create_by, $beneficiaire, $beneficiaire_ext, $name, $type, $description, $option_reservation, $overload_data, $entry_moderate, $rep_jour_c, $statut_entry, $keys, $courrier);
+			$new_id = grr_sql_insert_id();
 			if (Settings::get("automatic_mail") == 'yes')
 			{
 				if (isset($id) && ($id != 0))
 				{
 					if ($send_mail_moderate)
-						$message_error = send_mail($id,5,$dformat);
+						$message_error = send_mail($new_id,5,$dformat);
 					else
-						$message_error = send_mail($id,2,$dformat, array(), $oldRessource);
+						$message_error = send_mail($new_id,2,$dformat);
 				}
 				else
 				{
 					if ($send_mail_moderate)
-						$message_error = send_mail($id,5,$dformat);
+						$message_error = send_mail($new_id,5,$dformat);
 					else
-						$message_error = send_mail($id,1,$dformat);
+						$message_error = send_mail($new_id,1,$dformat);
 				}
 			}
 		}
-		$id = 0; // JeromeB : Réinit l'id de réservation sinon en cas de double re ssource celle-ci passe en modif
 	}
 	if (isset($id) && ($id != 0))
 	{
 		if ($rep_type != 0)
 			mrbsDelEntry(getUserName(), $id, "series", 1);
-	//	else
-	//		mrbsDelEntry(getUserName(), $id, NULL, 1);
+		else
+			mrbsDelEntry(getUserName(), $id, NULL, 1);
 	}
 	grr_sql_mutex_unlock("".TABLE_PREFIX."_entry");
 	$area = mrbsGetRoomArea($room_id);
 	$_SESSION['displ_msg'] = 'yes';
-	if ($message_error != "") // si erreur, retour à la page d'appel
-    {
-        $_SESSION['session_message_error'] = $message_error;
-            if (($room_back != 'all')&&(strpos($page, 'all') === false)){
-                Header("Location: ".$page.".php?year=$year&month=$month&day=$day&area=$area&room=$room_back");
-            }
-            else Header("Location: ".$page.".php?year=$year&month=$month&day=$day&area=$area");
-    }
-	else // sinon, retour sur la page de la réservation validée
-    {
-        if (($room_back != 'all')&&(strpos($page, 'all') === false))
-        {
-            Header("Location: ".$page.".php?year=$year&month=$month&day=$day&area=$area&room=$room_id");
-        }
-        else Header("Location: ".$page.".php?year=$year&month=$month&day=$day&area=$area");        
-    }        
+	if ($message_error != "")
+		$_SESSION['session_message_error'] = $message_error;
+	Header("Location: ".$page.".php?year=$year&month=$month&day=$day&area=$area&room=$room_back");
 	exit;
 }
 
@@ -701,99 +654,90 @@ grr_sql_mutex_unlock("".TABLE_PREFIX."_entry");
 if ($error_booking_in_past == 'yes')
 {
 	$str_date = utf8_strftime("%d %B %Y, %H:%M", $date_now);
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("booking_in_past") . "</h2>";
 	if ($rep_type != 0 && !empty($reps))
 		echo "<p>" . get_vocab("booking_in_past_explain_with_periodicity") . $str_date."</p>";
 	else
 		echo "<p>" . get_vocab("booking_in_past_explain") . $str_date."</p>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_duree_max_resa_area == 'yes')
 {
 	$area_id = grr_sql_query1("SELECT area_id FROM ".TABLE_PREFIX."_room WHERE id='".protect_data_sql($room_id)."'");
 	$duree_max_resa_area = grr_sql_query1("SELECT duree_max_resa_area FROM ".TABLE_PREFIX."_area WHERE id='".$area_id."'");
-	start_page_w_header();
+	print_header();
 	$temps_format = $duree_max_resa_area*60;
 	toTimeString($temps_format, $dur_units, true);
 	echo "<h2>" . get_vocab("error_duree_max_resa_area").$temps_format ." " .$dur_units."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 
 if ($error_delais_max_resa_room == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_delais_max_resa_room") ."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_chevaussement == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_chevaussement") ."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_delais_min_resa_room == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_delais_min_resa_room") ."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_date_option_reservation == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_date_confirm_reservation") ."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_booking_room_out == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("norights") . "</h2>";
 	echo "<p><b>" . get_vocab("tentative_reservation_ressource_indisponible") . "</b></p>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_qui_peut_reserver_pour == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_qui_peut_reserver_pour") ."</h2>";
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if ($error_heure_debut_fin == 'yes')
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("error_heure_debut_fin") ."</h2>";
-	// echo $start_day; // cette variable n'est pas définie ? YN
-	// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
-    echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-	end_page();
+	echo $start_day;
+	echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a>";
+	include "include/trailer.inc.php";
 	die();
 }
 if (strlen($err))
 {
-	start_page_w_header();
+	print_header();
 	echo "<h2>" . get_vocab("sched_conflict") . "</h2>";
 	if (!isset($hide_title))
 	{
@@ -804,11 +748,7 @@ if (strlen($err))
 	if (!isset($hide_title))
 		echo "</UL>";
 	if (authGetUserLevel(getUserName(),$area,'area') >= 4)
-		// echo "<center><table border=\"1\" cellpadding=\"10\" cellspacing=\"1\"><tr><td class='avertissement'><h3><a href='".traite_grr_url("","y")."edit_entry_handler.php?".$_SERVER['QUERY_STRING']."&amp;del_entry_in_conflict=yes'>".get_vocab("del_entry_in_conflict")."</a></h4></td></tr></table></center><br />"; modifié le 15/03/2018 YN
-        // echo "<center><table border=\"1\" cellpadding=\"10\" cellspacing=\"1\"><tr><td class='avertissement'><h3><a href='edit_entry_handler.php?".$_SERVER['QUERY_STRING']."&amp;del_entry_in_conflict=yes'>".get_vocab("del_entry_in_conflict")."</a></h3></td></tr></table></center><br />";
-        echo '<center><a class="btn btn-danger" type="button" href="edit_entry_handler.php?'.$_SERVER['QUERY_STRING'].'&amp;del_entry_in_conflict=yes">'.get_vocab("del_entry_in_conflict").'</a></center><br />';
+		echo "<center><table border=\"1\" cellpadding=\"10\" cellspacing=\"1\"><tr><td class='avertissement'><h3><a href='".traite_grr_url("","y")."edit_entry_handler.php?".$_SERVER['QUERY_STRING']."&amp;del_entry_in_conflict=yes'>".get_vocab("del_entry_in_conflict")."</a></h4></td></tr></table></center><br />";
 }
-// echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a><p>"; // à modifier aussi ? YN
-echo "<a href=\"".$back."\">".get_vocab('returnprev')."</a>";
-end_page(); 
-?>
+echo "<a href=\"".$back."&amp;Err=yes\">".get_vocab('returnprev')."</a><p>";
+include "include/trailer.inc.php"; ?>

@@ -126,19 +126,21 @@ if (isset($_POST['record']) && ($_POST['record'] == 'yes'))
 									$starttime = mktime($morningstarts, 0, 0, $month, $day, $year);
 									$endtime   = mktime($eveningends, $eveningends_minutes , 0, $month, $day, $year);
 								}
-								if ($erreur != 'y')
-								{
-									// On efface toutes les résa en conflit
-									$result += grrDelEntryInConflict($row[0], $starttime, $endtime, 0, 0, 1);
-									// S'il s'agit d'une action de réservation, on réserve !
-									if ($type_resa == "resa")
-									{
-										// Par sécurité, on teste quand même s'il reste des conflits
-										$err = mrbsCheckFree($row[0], $starttime, $endtime, 0,0);
-										if (!$err)
-											mrbsCreateSingleEntry($starttime, $endtime, 0, 0, $row[0], getUserName(), $beneficiaire, "", $name, $type_, $description, -1,array(),0,0,'-', 0, 0);
-									}
-								}
+                                if ($erreur != 'y') {
+                                    // On efface toutes les résa en conflit
+                                    $result += (int)grrDelEntryInConflict($row[0], $starttime, $endtime, 0, 0, 1);
+
+                                    // S'il s'agit d'une action de réservation, on réserve !
+                                    if ($type_resa == "resa") {
+                                        // Par sécurité, on teste quand même s'il reste des conflits
+                                        $err = mrbsCheckFree($row[0], $starttime, $endtime, 0, 0);
+                                        if (!$err) {
+                                            mrbsCreateSingleEntry($starttime, $endtime, 0, 0, $row[0], getUserName(),
+                                                $beneficiaire, "", $name, $type_, $description, -1, array(), 0, 0, '-',
+                                                0, 0);
+                                        }
+                                    }
+                                }
 							}
 							$day++;
 						}

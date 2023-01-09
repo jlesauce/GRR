@@ -81,28 +81,27 @@ function mrbsCheckFree($room_id, $starttime, $endtime, $ignore, $repignore)
 }
 return $err;
 }
+
 /** grrCheckOverlap()
  *
  * Dans le cas d'une réservation avec périodicité,
- * Vérifie que les différents créneaux ne se chevaussent pas.
+ * Vérifie que les différents créneaux ne se chevauchent pas.
  *
  * $reps : tableau des débuts de réservation
  * $diff : durée d'une réservation
  */
-function grrCheckOverlap($reps, $diff)
+function grrCheckOverlap($reps, $diff): bool
 {
 	$err = "";
-	$total = count($reps);
-	for($i = 1; $i < $total; $i++)
-	{
-		if ($reps[$i] < ($reps[0] + $diff))
+	for ($i = 1; $i < strlen($reps); $i++) {
+		if ($reps[$i] < ($reps[0] + $diff)) {
 			$err = "yes";
+		}
 	}
-	if ($err == "")
-		return TRUE;
-	else
-		return FALSE;
+
+	return $err == "";
 }
+
 /** grrDelEntryInConflict()
  *
  *  Efface les réservation qui sont en partie ou totalement dans le créneau $starttime<->$endtime
@@ -674,6 +673,7 @@ function mrbsCreateRepeatingEntrys($starttime, $endtime, $rep_type, $rep_enddate
 	}
 	return $ent;
 }
+
 /* mrbsGetEntryInfo()
  *
  * Get the booking's entrys
@@ -684,31 +684,35 @@ function mrbsCreateRepeatingEntrys($starttime, $endtime, $rep_type, $rep_enddate
  */
 function mrbsGetEntryInfo($id)
 {
-	$sql = "SELECT start_time, end_time, entry_type, repeat_id, room_id,
+	$sql_request = "SELECT start_time, end_time, entry_type, repeat_id, room_id,
 	timestamp, beneficiaire, name, type, description
-	FROM ".TABLE_PREFIX."_entry
-	WHERE id = '".$id."'";
-	$res = grr_sql_query($sql);
-	if (!$res)
-		return;
-	$ret = '';
-	if (grr_sql_count($res) > 0)
-	{
-		$row = grr_sql_row($res, 0);
-		$ret["start_time"]  = $row[0];
-		$ret["end_time"]    = $row[1];
-		$ret["entry_type"]  = $row[2];
-		$ret["repeat_id"]   = $row[3];
-		$ret["room_id"]     = $row[4];
-		$ret["timestamp"]   = $row[5];
-		$ret["beneficiaire"]   = $row[6];
-		$ret["name"]        = $row[7];
-		$ret["type"]        = $row[8];
-		$ret["description"] = $row[9];
+	FROM " . TABLE_PREFIX . "_entry
+	WHERE id = '" . $id . "'";
+
+	$sql_result = grr_sql_query($sql_request);
+	if (!$sql_result) {
+		return null;
 	}
-	grr_sql_free($res);
-	return $ret;
+
+	$entry_info = null;
+	if (grr_sql_count($sql_result) > 0) {
+		$row = grr_sql_row($sql_result, 0);
+		$entry_info = array();
+		$entry_info["start_time"] = $row[0];
+		$entry_info["end_time"] = $row[1];
+		$entry_info["entry_type"] = $row[2];
+		$entry_info["repeat_id"] = $row[3];
+		$entry_info["room_id"] = $row[4];
+		$entry_info["timestamp"] = $row[5];
+		$entry_info["beneficiaire"] = $row[6];
+		$entry_info["name"] = $row[7];
+		$entry_info["type"] = $row[8];
+		$entry_info["description"] = $row[9];
+	}
+	grr_sql_free($sql_result);
+	return $entry_info;
 }
+
 function mrbsGetRoomArea($id)
 {
 	$id = grr_sql_query1("SELECT area_id FROM ".TABLE_PREFIX."_room WHERE (id = '".$id."')");

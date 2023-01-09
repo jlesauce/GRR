@@ -385,8 +385,10 @@ if ($rep_type == 2)
 	for ($i = 0; $i < 7; $i++)
 		$rep_opt .= empty($rep_day[$i]) ? "0" : "1";
 }
-if ($rep_type != 0)
-	$reps = mrbsGetRepeatEntryList($starttime, isset($rep_enddate) ? $rep_enddate : 0, $rep_type, $rep_opt, $max_rep_entrys, $rep_num_weeks, $rep_jour_c, $area, $rep_month_abs1, $rep_month_abs2);
+if ($rep_type != 0) {
+	$reps = mrbsGetRepeatEntryList($starttime, $rep_enddate ?? 0, $rep_type, $rep_opt, $max_rep_entrys,
+		$rep_num_weeks, $rep_jour_c, $area, $rep_month_abs1, $rep_month_abs2);
+}
 $repeat_id = 0;
 if (isset($id) && ($id != 0))
 {
@@ -409,6 +411,7 @@ $error_date_option_reservation = 'no';
 $error_chevaussement = 'no';
 $error_qui_peut_reserver_pour = 'no';
 $error_heure_debut_fin = 'no';
+
 foreach ( $_GET['rooms'] as $room_id )
 {
 	if ($rep_type != 0 && !empty($reps))
@@ -417,9 +420,12 @@ foreach ( $_GET['rooms'] as $room_id )
 		if (!grrCheckOverlap($reps, $diff))
 			$error_chevaussement = 'yes';
 		$i = 0;
-		while (($i < count($reps)) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_area == 'no') && ($error_delais_max_resa_room == 'no') && ($error_delais_min_resa_room == 'no') && ($error_date_option_reservation == 'no') && ($error_qui_peut_reserver_pour == 'no') && ($error_heure_debut_fin == 'no'))
-		{
-			if ((authGetUserLevel(getUserName(),-1) < 2) && (auth_visiteur(getUserName(),$room_id) == 0))
+
+		while (($i < strlen($reps)) && ($error_booking_in_past == 'no') && ($error_duree_max_resa_area == 'no')
+			&& ($error_delais_max_resa_room == 'no') && ($error_delais_min_resa_room == 'no')
+			&& ($error_date_option_reservation == 'no') && ($error_qui_peut_reserver_pour == 'no')
+			&& ($error_heure_debut_fin == 'no')) {
+			if ((authGetUserLevel(getUserName(), -1) < 2) && (auth_visiteur(getUserName(), $room_id) == 0))
 				$error_booking_room_out = 'yes';
 			if (!(verif_booking_date(getUserName(), -1, $room_id, $reps[$i], $date_now, $enable_periods)))
 				$error_booking_in_past = 'yes';
@@ -433,7 +439,7 @@ foreach ( $_GET['rooms'] as $room_id )
 				$error_date_option_reservation = 'yes';
 			if (!(verif_qui_peut_reserver_pour($room_id, getUserName(), $beneficiaire)))
 				$error_qui_peut_reserver_pour = 'yes';
-			if (!(verif_heure_debut_fin($reps[$i], $reps[$i]+$diff, $area)))
+			if (!(verif_heure_debut_fin($reps[$i], $reps[$i] + $diff, $area)))
 				$error_heure_debut_fin = 'yes';
 			$i++;
 		}

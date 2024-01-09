@@ -1,0 +1,60 @@
+.grr_cadre {
+  width : 100%;
+  background-color: #FFFFFF;
+  padding: 5px;
+}
+.grr_quote {
+  margin-left : 40px;
+  margin-top : 10px;
+  margin-bottom : 10px;
+  border : solid 1px #aaaaaa;
+  background-color: #dddddd;
+  padding: 5px;
+}
+
+a {text-decoration: none;}
+a:hover {color:#FF9900; text-decoration: underline;
+}
+
+body {
+  font-family:  Verdana,Arial,Tahoma,Sans,sans-serif;
+}
+h3.grr {
+  font-family: Verdana,Arial,Sans,sans-serif;
+  font-weight: bold;
+  font-size: 115%;
+  text-align: center;
+}
+
+table.grr {
+	border: 1px solid;
+	border-collapse: collapse;
+}
+
+table.grr tr.row_first {
+  background-color: #FCF4D0;
+}
+
+table.grr tr.row_odd {
+  background-color: #C0C0C0;
+}
+
+table.grr tr.row_even {
+  background-color: #F0F0F0;
+}
+
+table.grr td, th {
+	border: 1px solid;
+	border-collapse: collapse;
+  padding: 1px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+@page { margin: 2cm }
+P { margin-bottom: 0.21cm }
+H3 { margin-bottom: 0.21cm }
+H4 { margin-bottom: 0.21cm }
+H4.western { font-family: "Arial", sans-serif; font-size: 11pt; font-style: italic }
+H4.cjk { font-family: "MS Mincho"; font-size: 11pt; font-style: italic }
+H4.ctl { font-size: 11pt; font-style: italic }
